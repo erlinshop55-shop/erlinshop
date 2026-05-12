@@ -10,15 +10,22 @@ export default async function AdminDocsPage() {
 
   try {
     const memoryPath = path.join(process.cwd(), 'memory.md');
-    content = await fs.readFile(memoryPath, 'utf-8');
-    const stats = await fs.stat(memoryPath);
-    lastUpdated = stats.mtime.toLocaleString('id-ID', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    });
+    
+    // Check if file exists first to avoid ENOENT logs in production
+    const exists = await fs.access(memoryPath).then(() => true).catch(() => false);
+    
+    if (exists) {
+      content = await fs.readFile(memoryPath, 'utf-8');
+      const stats = await fs.stat(memoryPath);
+      lastUpdated = stats.mtime.toLocaleString('id-ID', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+    } else {
+      console.log('AdminDocs: memory.md not found, using default message.');
+    }
   } catch (error) {
-    // Silence ENOENT error in production logs while keeping it for debugging if needed
-    console.warn('Note: memory.md is excluded from production for security.');
+    console.error('Error loading internal documentation:', error);
   }
 
   return (

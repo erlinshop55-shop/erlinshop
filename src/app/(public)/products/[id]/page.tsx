@@ -14,44 +14,56 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const product = await db.query.products.findFirst({
-    where: eq(products.id, id),
-  });
+  try {
+    const { id } = await params;
+    const product = await db.query.products.findFirst({
+      where: eq(products.id, id),
+    });
 
-  if (!product) {
+    if (!product) {
+      return {
+        title: 'Product Not Found',
+      };
+    }
+
     return {
-      title: 'Product Not Found',
+      title: `${product.name} | Erlinshop`,
+      description: product.description || `Buy ${product.name} at Erlinshop.`,
+      openGraph: {
+        images: product.images?.[0] ? [{ url: product.images[0] }] : [],
+      },
+    };
+  } catch (error) {
+    console.error('Failed to generate product metadata:', error);
+    return {
+      title: 'Product Details | Erlinshop',
     };
   }
-
-  return {
-    title: `${product.name} | Erlinshop`,
-    description: product.description || `Buy ${product.name} at Erlinshop.`,
-    openGraph: {
-      images: product.images?.[0] ? [{ url: product.images[0] }] : [],
-    },
-  };
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { id } = await params;
-  
-  const product = await db.query.products.findFirst({
-    where: eq(products.id, id),
-    with: {
-      category: true,
-      variants: true,
-    },
-  });
+  try {
+    const { id } = await params;
+    
+    const product = await db.query.products.findFirst({
+      where: eq(products.id, id),
+      with: {
+        category: true,
+        variants: true,
+      },
+    });
 
-  if (!product) {
-    notFound();
+    if (!product) {
+      notFound();
+    }
+
+    return (
+      <div className="min-h-screen pt-24 md:pt-32 pb-12">
+        <ProductDetailClient product={product as ProductWithVariants} />
+      </div>
+    );
+  } catch (error) {
+    console.error('Failed to fetch product details:', error);
+    notFound(); // Fallback to not found if DB fails
   }
-
-  return (
-    <div className="min-h-screen pt-24 md:pt-32 pb-12">
-      <ProductDetailClient product={product as ProductWithVariants} />
-    </div>
-  );
 }

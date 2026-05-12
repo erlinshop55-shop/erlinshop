@@ -16,35 +16,49 @@ export const metadata: Metadata = {
 };
 
 async function getInitialData(page: number) {
-  const limit = page * ITEMS_PER_PAGE;
-  const allProducts = await db.query.products.findMany({
-    where: eq(products.isPublished, true),
-    with: {
-      category: true,
-    },
-    orderBy: [desc(products.createdAt)],
-    limit: limit,
-  });
+  try {
+    const limit = page * ITEMS_PER_PAGE;
+    const allProducts = await db.query.products.findMany({
+      where: eq(products.isPublished, true),
+      with: {
+        category: true,
+      },
+      orderBy: [desc(products.createdAt)],
+      limit: limit,
+    });
 
-  const allCategories = await db.query.categories.findMany({
-    orderBy: [asc(categories.order)],
-  });
+    const allCategories = await db.query.categories.findMany({
+      orderBy: [asc(categories.order)],
+    });
 
-  const [{ count }] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(products)
-    .where(eq(products.isPublished, true));
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .where(eq(products.isPublished, true));
 
-  return { 
-    allProducts, 
-    allCategories,
-    metadata: {
-      total: Number(count),
-      page,
-      limit: ITEMS_PER_PAGE,
-      totalPages: Math.ceil(Number(count) / ITEMS_PER_PAGE)
-    }
-  };
+    return { 
+      allProducts, 
+      allCategories,
+      metadata: {
+        total: Number(count),
+        page,
+        limit: ITEMS_PER_PAGE,
+        totalPages: Math.ceil(Number(count) / ITEMS_PER_PAGE)
+      }
+    };
+  } catch (error) {
+    console.error('Failed to fetch initial catalog data:', error);
+    return {
+      allProducts: [],
+      allCategories: [],
+      metadata: {
+        total: 0,
+        page,
+        limit: ITEMS_PER_PAGE,
+        totalPages: 0
+      }
+    };
+  }
 }
 
 export default async function ProductsPage({

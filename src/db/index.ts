@@ -10,10 +10,13 @@ if (typeof globalThis.window === 'undefined' && (process.env.NODE_ENV === 'devel
 }
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('[db/index.ts] DATABASE_URL is not set in environment variables.');
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('DATABASE_URL is missing in production environment');
+  }
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const connectionString = process.env.DATABASE_URL || '';
+const pool = new Pool({ connectionString });
 
 export const db = drizzle(pool, { schema });
 
