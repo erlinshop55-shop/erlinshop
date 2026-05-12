@@ -7,6 +7,8 @@ build/
 
 # AI & Internal Docs
 memory.md
+protokol_deploy.md
+PROJECT_HANDOFF.md
 .agent-skills/
 perintahku/
 plan_phase_*.md
