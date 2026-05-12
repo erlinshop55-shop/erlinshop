@@ -1,0 +1,41 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1778341430981,
+      "tag": "0000_fat_albert_cleary",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1778353924386,
+      "tag": "0001_eager_donald_blake",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1778363844950,
+      "tag": "0002_amazing_boom_boom",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778410250402,
+      "tag": "0003_hot_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778536764421,
+      "tag": "0004_useful_boom_boom",
+      "breakpoints": true
+    }
+  ]
+}

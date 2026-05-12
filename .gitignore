@@ -1,0 +1,20 @@
+.env*
+!.env.example
+node_modules/
+.next/
+dist/
+build/
+
+# AI & Internal Docs
+memory.md
+.agent-skills/
+perintahku/
+plan_phase_*.md
+spec_phase_*.md
+scratch/
+help*.txt
+erlins-shop-pdd-v2.jsx
+etalase-agent-kit/
+implementation_plan.md
+task.md
+walkthrough.md
