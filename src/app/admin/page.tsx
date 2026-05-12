@@ -1,6 +1,8 @@
 import { getDashboardStats } from "./stats-actions";
 import { Package, Layers, TrendingUp, ShoppingBag } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const statsRes = await getDashboardStats();
   const stats = statsRes.success ? statsRes.data : { totalProducts: 0, totalCategories: 0 };

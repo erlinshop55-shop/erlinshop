@@ -7,6 +7,8 @@ import LogoutButton from '@/components/public/profile/LogoutButton';
 import { ShoppingBag, CreditCard, User } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'My Profile | Erlinshop',
   description: 'Manage your orders and profile information.',

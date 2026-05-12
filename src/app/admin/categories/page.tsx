@@ -1,6 +1,8 @@
 import { getCategories } from "./actions";
 import CategoryClient from "./CategoryClient";
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoriesPage() {
   const response = await getCategories();
   
