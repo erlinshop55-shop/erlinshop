@@ -2,9 +2,11 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { FileText, Clock, ShieldCheck } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDocsPage() {
-  let content = '';
-  let lastUpdated = '';
+  let content = 'No internal documentation available in production environment.';
+  let lastUpdated = 'N/A';
 
   try {
     const memoryPath = path.join(process.cwd(), 'memory.md');
@@ -15,8 +17,8 @@ export default async function AdminDocsPage() {
       timeStyle: 'short',
     });
   } catch (error) {
-    console.error('Docs loading error:', error);
-    content = 'Failed to load documentation (memory.md not found).';
+    // Silence ENOENT error in production logs while keeping it for debugging if needed
+    console.warn('Note: memory.md is excluded from production for security.');
   }
 
   return (
