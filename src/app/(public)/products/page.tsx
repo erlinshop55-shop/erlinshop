@@ -1,5 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
+
+export const dynamic = 'force-dynamic';
 import { db } from '@/db';
 import { products, categories } from '@/db/schema';
 import { desc, asc, sql, eq } from 'drizzle-orm';
