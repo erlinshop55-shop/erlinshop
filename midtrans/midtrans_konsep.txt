@@ -1,0 +1,25 @@
+SYSTEM OVERRIDE: STRATEGY LOCK & AMBIGUITY GUARD ACTIVATED
+
+STATUS: BRAINSTORMING & TASK MAPPING (PHASE 0)
+KONTEKS: Kita akan membangun sistem "Payment Gateway" untuk Erlinshop yang menggabungkan 2 metode:
+
+Transfer Bank Manual (Dikelola via Admin Panel: Bank, No Rek, Atas Nama, Status).
+
+Pembayaran Otomatis Midtrans.
+
+ATURAN ARSITEKTUR MUTLAK:
+
+Terapkan konsep "Smart Client, Dumb Server".
+
+Sistem berjalan di Next.js 15 (App Router), Drizzle ORM, Neon Postgres.
+
+TUGAS ANDA (HANYA ANALISIS, JANGAN GENERATE KODE):
+Buatkan saya dokumen pemetaan tugas (Task Mapping) yang terstruktur mengenai bagaimana Anda akan membangun sistem ini. Laporan Anda HARUS mencakup:
+
+Analisis Skema Database: Tabel apa yang perlu dibuat untuk menampung data rekening manual? Kolom apa saja yang perlu ditambahkan di tabel orders untuk mengakomodasi Midtrans (seperti snap_token) dan Transfer Manual?
+
+Alur Logika (Flow): Jelaskan secara singkat bagaimana "Smart Client" akan berinteraksi dengan "Dumb Server" saat user menekan tombol "Bayar" untuk masing-masing metode.
+
+Keamanan (Midtrans): Bagaimana Anda merencanakan keamanan Webhook Midtrans agar tidak bisa ditembus oleh manipulasi Client?
+
+PERINGATAN: DILARANG keras memberikan kode .ts, .tsx, atau perintah migrasi database dalam respons ini. Berikan murni pemetaan logika konseptual. Tanyakan "Apakah cetak biru ini disetujui?" di akhir laporan Anda.

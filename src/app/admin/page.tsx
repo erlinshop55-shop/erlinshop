@@ -5,7 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
   const statsRes = await getDashboardStats();
-  const stats = statsRes.success ? statsRes.data : { totalProducts: 0, totalCategories: 0 };
+  const stats = statsRes.success 
+    ? statsRes.data 
+    : { totalProducts: 0, totalCategories: 0, totalSales: 0, activeOrders: 0 };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -47,29 +49,35 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        {/* Placeholder for Sales (Future) */}
-        <div className="bg-zinc-100/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-900 p-6 rounded-3xl opacity-30 grayscale cursor-not-allowed">
+        {/* Total Sales */}
+        <div className="bg-white dark:bg-zinc-900 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 p-6 rounded-3xl group hover:border-amber-500/50 transition-all duration-300 shadow-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           <div className="flex items-start justify-between">
-            <div className="p-3 bg-zinc-200 dark:bg-zinc-900 rounded-2xl">
-              <TrendingUp className="w-6 h-6 text-zinc-400 dark:text-zinc-600" />
+            <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-2xl group-hover:bg-amber-500 transition-colors">
+              <TrendingUp className="w-6 h-6 text-zinc-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-black" />
             </div>
+            <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-400/10 px-2 py-1 rounded-full uppercase tracking-widest">Real-time</span>
           </div>
           <div className="mt-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Total Penjualan</p>
-            <h3 className="text-4xl font-black tracking-tighter mt-1 font-mono text-zinc-400 dark:text-zinc-700">Rp 0</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Total Penjualan</p>
+            <h3 className="text-4xl font-black tracking-tighter mt-1 font-mono text-zinc-900 dark:text-white">
+              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats?.totalSales || 0)}
+            </h3>
           </div>
         </div>
 
-        {/* Placeholder for Orders (Future) */}
-        <div className="bg-zinc-100/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-900 p-6 rounded-3xl opacity-30 grayscale cursor-not-allowed">
+        {/* Active Orders */}
+        <div className="bg-white dark:bg-zinc-900 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/80 p-6 rounded-3xl group hover:border-amber-500/50 transition-all duration-300 shadow-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           <div className="flex items-start justify-between">
-            <div className="p-3 bg-zinc-200 dark:bg-zinc-900 rounded-2xl">
-              <ShoppingBag className="w-6 h-6 text-zinc-400 dark:text-zinc-600" />
+            <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-2xl group-hover:bg-amber-500 transition-colors">
+              <ShoppingBag className="w-6 h-6 text-zinc-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-black" />
             </div>
+            <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-400/10 px-2 py-1 rounded-full uppercase tracking-widest">Antrean</span>
           </div>
           <div className="mt-4">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Pesanan Aktif</p>
-            <h3 className="text-4xl font-black tracking-tighter mt-1 font-mono text-zinc-400 dark:text-zinc-700">0</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Pesanan Aktif</p>
+            <h3 className="text-4xl font-black tracking-tighter mt-1 font-mono text-zinc-900 dark:text-white">
+              {stats?.activeOrders || 0}
+            </h3>
           </div>
         </div>
       </div>

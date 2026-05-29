@@ -150,7 +150,7 @@ export function VariantManager({
                 </div>
 
                 {/* Stock & Pricing */}
-                <div className="md:col-span-4 grid grid-cols-2 gap-2">
+                <div className="md:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label htmlFor={`stock-${index}`} className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-1.5">
                       STOK (QTY)
@@ -160,6 +160,7 @@ export function VariantManager({
                       type="number"
                       value={variant.stock}
                       onChange={(e) => updateVariant(index, { stock: Number.parseInt(e.target.value, 10) || 0 })}
+                      onFocus={(e) => e.target.select()}
                       className="w-full px-3 py-2 rounded-lg border border-zinc-200 bg-white text-xs font-mono font-black text-zinc-950 focus:border-amber-500 outline-none transition-all shadow-inner"
                     />
                   </div>
@@ -172,9 +173,11 @@ export function VariantManager({
                       type="text"
                       value={variant.price ? formatInputIDR(variant.price.toString()) : ""}
                       onChange={(e) => {
-                        const val = e.target.value.replaceAll(".", "");
-                        updateVariant(index, { price: val ? Number.parseInt(val, 10) : null });
+                        const val = e.target.value.replaceAll(".", "").replaceAll(/\D/g, "");
+                        const parsed = Number.parseInt(val, 10);
+                        updateVariant(index, { price: Number.isNaN(parsed) ? null : parsed });
                       }}
+                      onFocus={(e) => e.target.select()}
                       placeholder="BASE"
                       className="w-full px-3 py-2 rounded-lg border border-zinc-200 bg-white text-xs font-mono font-black text-emerald-700 focus:border-emerald-600 outline-none transition-all placeholder:text-zinc-300 shadow-inner"
                     />

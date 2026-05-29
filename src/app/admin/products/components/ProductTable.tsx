@@ -170,26 +170,26 @@ export function ProductTable({ products, metadata, onEdit, onDelete, onTogglePub
                       </div>
                     </td>
                     <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                      <div className="flex justify-end gap-2 transition-all">
                         <a
                           href={`/products/${product.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2.5 text-zinc-500 hover:text-amber-400 hover:bg-amber-400/10 rounded-xl transition-all border border-transparent hover:border-amber-400/20"
+                          className="p-2.5 text-amber-500 dark:text-amber-500 hover:text-amber-400 bg-amber-500/5 dark:bg-amber-500/5 rounded-xl transition-all border border-amber-500/20 dark:border-amber-500/20 hover:bg-amber-500/20"
                           title="View Asset"
                         >
                           <ExternalLink size={16} />
                         </a>
                         <button 
                           onClick={() => onEdit(product)}
-                          className="p-2.5 text-zinc-500 hover:text-amber-400 hover:bg-amber-400/10 rounded-xl transition-all border border-transparent hover:border-amber-400/20"
+                          className="p-2.5 text-amber-500 dark:text-amber-500 hover:text-amber-400 bg-amber-500/5 dark:bg-amber-500/5 rounded-xl transition-all border border-amber-500/20 dark:border-amber-500/20 hover:bg-amber-500/20"
                           title="Modify Order"
                         >
                           <Pencil size={16} />
                         </button>
                         <button 
                           onClick={() => onDelete(product.id)}
-                          className="p-2.5 text-zinc-500 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all border border-transparent hover:border-rose-500/20"
+                          className="p-2.5 text-rose-500 dark:text-rose-500 hover:text-rose-400 bg-rose-500/5 dark:bg-rose-500/5 rounded-xl transition-all border border-rose-500/20 dark:border-rose-500/20 hover:bg-rose-500/20"
                           title="Liquidate Asset"
                         >
                           <Trash2 size={16} />
@@ -267,19 +267,19 @@ export function ProductTable({ products, metadata, onEdit, onDelete, onTogglePub
                     href={`/products/${product.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 rounded-xl hover:text-amber-600 dark:hover:text-amber-400 transition-all border border-zinc-200 dark:border-zinc-800 min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm"
+                    className="p-3 bg-amber-500/5 dark:bg-amber-500/5 text-amber-500 dark:text-amber-500 rounded-xl hover:bg-amber-500/20 transition-all border border-amber-500/20 dark:border-amber-500/20 min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm"
                   >
                     <ExternalLink size={18} />
                   </a>
                   <button 
                     onClick={() => onEdit(product)}
-                    className="p-3 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 rounded-xl hover:text-amber-600 dark:hover:text-amber-400 transition-all border border-zinc-200 dark:border-zinc-800 min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm"
+                    className="p-3 bg-amber-500/5 dark:bg-amber-500/5 text-amber-500 dark:text-amber-500 rounded-xl hover:bg-amber-500/20 transition-all border border-amber-500/20 dark:border-amber-500/20 min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm"
                   >
                     <Pencil size={18} />
                   </button>
                   <button 
                     onClick={() => onDelete(product.id)}
-                    className="p-3 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-500 transition-all border border-zinc-200 dark:border-zinc-800 min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm"
+                    className="p-3 bg-rose-500/5 dark:bg-rose-500/5 text-rose-500 dark:text-rose-500 hover:bg-rose-500/20 transition-all border border-rose-500/20 dark:border-rose-500/20 min-h-[44px] min-w-[44px] flex items-center justify-center shadow-sm"
                   >
                     <Trash2 size={18} />
                   </button>

@@ -1,3 +1,8 @@
+// 📁 File Target: d:\Erlinshop\src\app\admin\orders\OrderList.tsx
+// 🎯 Purpose: Pengelolaan data pesanan admin dengan list-modal view, verifikasi transfer manual, dan FSM transition (Zalora DNA).
+// 🔗 Depends on: react, lucide-react, @/app/actions/orders, @/app/actions/payment, @/components/admin/orders/ActionButton, sonner
+// 💥 Used by (Blast Radius): Halaman manajemen order admin (/admin/orders)
+
 'use client';
 
 import React, { useState } from 'react';
@@ -12,6 +17,7 @@ import {
   Package
 } from 'lucide-react';
 import { updateOrderStatus, getOrderDetail } from '@/app/actions/orders';
+import { verifyManualPayment } from '@/app/actions/payment';
 import { toast } from 'sonner';
 import { OrderSelect, OrderItemSelect } from '@/db/schema/orders';
 import { ActionButton } from '@/components/admin/orders/ActionButton';
@@ -31,6 +37,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
@@ -53,6 +60,22 @@ export default function OrderList({ initialOrders }: OrderListProps) {
       toast.success(res.message || `Status pesanan diperbarui ke ${newStatus}`);
     } else {
       toast.error(res.error || "Gagal memperbarui status");
+    }
+    setIsUpdating(false);
+  };
+
+  const handleVerifyManualPayment = async () => {
+    if (!selectedOrder) return;
+    setIsUpdating(true);
+    const res = await verifyManualPayment(selectedOrder.id);
+    if (res.success) {
+      // Perbarui status lokal di tabel
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, paymentStatus: 'PAID', status: 'PROCESSING' } : o));
+      // Perbarui status lokal di modal
+      setSelectedOrder({ ...selectedOrder, paymentStatus: 'PAID', status: 'PROCESSING' });
+      toast.success("Pembayaran berhasil diverifikasi secara manual! Pesanan otomatis masuk tahap PROCESSING.");
+    } else {
+      toast.error(res.error || "Gagal memverifikasi pembayaran");
     }
     setIsUpdating(false);
   };
@@ -101,15 +124,15 @@ export default function OrderList({ initialOrders }: OrderListProps) {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white dark:bg-zinc-900/50 backdrop-blur-xl p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white dark:bg-zinc-900 backdrop-blur-xl p-4 rounded-xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm">
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-650 w-4 h-4" />
           <input 
             type="text"
             placeholder="Cari nama pelanggan atau ID pesanan..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-700"
+            className="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-650"
           />
         </div>
 
@@ -128,7 +151,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
               className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
                 statusFilter === item.value 
                   ? 'bg-amber-500 text-zinc-950 shadow-lg shadow-amber-500/10' 
-                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-750'
               }`}
             >
               {item.label}
@@ -138,11 +161,11 @@ export default function OrderList({ initialOrders }: OrderListProps) {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-zinc-950 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900 backdrop-blur-xl rounded-xl border border-zinc-250 dark:border-zinc-800/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+              <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-850">
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">ID Pesanan</th>
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Pelanggan</th>
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Status</th>
@@ -160,7 +183,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group">
+                  <tr key={order.id} className="hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors border-b border-zinc-100 dark:border-zinc-800/40 group">
                     <td className="px-6 py-4">
                       <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400 font-bold">{order.id}</span>
                     </td>
@@ -182,7 +205,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-xs text-zinc-500 dark:text-zinc-500">
+                      <span className="text-xs font-bold text-zinc-500 dark:text-amber-400">
                         {new Date(order.createdAt).toLocaleDateString('id-ID', {
                           day: '2-digit',
                           month: 'short',
@@ -196,7 +219,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                       <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={() => handleViewDetail(order.id)}
-                          className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-800 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700 rounded-lg transition-all"
+                          className="p-2 text-amber-500 dark:text-amber-500 hover:text-zinc-950 dark:hover:text-zinc-950 hover:bg-amber-500 dark:hover:bg-amber-500 border border-amber-500/20 dark:border-amber-500/30 rounded-lg transition-all bg-amber-500/10"
                           title="Lihat Detail"
                         >
                           <Eye className="w-4 h-4" />
@@ -205,7 +228,7 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                           href={`https://wa.me/${order.customerPhone?.replaceAll(/\D/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-500/20 rounded-lg transition-all"
+                          className="p-2 text-amber-500 dark:text-amber-500 hover:text-zinc-950 dark:hover:text-zinc-950 hover:bg-amber-500 dark:hover:bg-amber-500 border border-amber-500/20 dark:border-amber-500/30 rounded-lg transition-all bg-amber-500/10"
                           title="Hubungi WhatsApp"
                         >
                           <MessageSquare className="w-4 h-4" />
@@ -248,24 +271,74 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                   <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               )}
-              {/* Customer Info */}
-              <div className="grid grid-cols-2 gap-8 p-6 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">Pelanggan</span>
-                  <p className="font-bold text-zinc-900 dark:text-zinc-100">{selectedOrder.customerName}</p>
+              
+              {/* Customer & Payment Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-zinc-50 dark:bg-zinc-950/70 rounded-2xl border border-zinc-100 dark:border-zinc-800/80">
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">Pelanggan</span>
+                    <p className="font-bold text-zinc-900 dark:text-zinc-100">{selectedOrder.customerName}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">WhatsApp</span>
+                    <p className="font-bold text-zinc-900 dark:text-zinc-100">{selectedOrder.customerPhone || '-'}</p>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">WhatsApp</span>
-                  <p className="font-bold text-zinc-900 dark:text-zinc-100">{selectedOrder.customerPhone || '-'}</p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">Metode Pembayaran</span>
+                    <p className="font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest text-xs">
+                      {selectedOrder.paymentMethod === 'MIDTRANS' && 'Midtrans (Otomatis)'}
+                      {selectedOrder.paymentMethod === 'MANUAL_TRANSFER' && 'Transfer Manual'}
+                      {selectedOrder.paymentMethod === 'UNSET' && 'Belum Memilih'}
+                      {!selectedOrder.paymentMethod && 'WhatsApp Manual'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">Status Pembayaran</span>
+                    <div>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black border uppercase ${
+                        selectedOrder.paymentStatus === 'PAID' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' :
+                        selectedOrder.paymentStatus === 'PENDING_VERIFICATION' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' :
+                        selectedOrder.paymentStatus === 'EXPIRED' ? 'bg-zinc-500/10 text-zinc-500 dark:text-zinc-500 border-zinc-500/20' :
+                        selectedOrder.paymentStatus === 'FAILED' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' :
+                        'bg-zinc-500/10 text-zinc-500 dark:text-zinc-400 border-zinc-500/20'
+                      }`}>
+                        {selectedOrder.paymentStatus || 'UNPAID'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Bukti Transfer Seksi */}
+              {selectedOrder.paymentMethod === 'MANUAL_TRANSFER' && selectedOrder.paymentProofUrl && (
+                <div className="p-6 bg-zinc-50 dark:bg-zinc-950/70 rounded-2xl border border-zinc-100 dark:border-zinc-800/80 space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block">Bukti Transfer Pembeli</span>
+                  <div 
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setShowLightbox(true)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowLightbox(true); }}
+                    className="relative w-40 h-56 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 group cursor-zoom-in"
+                  >
+                    <img src={selectedOrder.paymentProofUrl} alt="Bukti Transfer" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="text-white text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
+                        <Eye size={14} /> Perbesar
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Items Table */}
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-4">Item Pesanan (Snapshots)</span>
                 <div className="space-y-3">
                   {selectedOrder.items?.map((item: any) => (
-                    <div key={item.id} className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl shadow-sm">
+                    <div key={item.id} className="flex items-center gap-4 p-4 bg-white dark:bg-zinc-950/90 border border-zinc-100 dark:border-zinc-800/85 rounded-2xl shadow-sm">
                       <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-xl overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-700">
                         {item.productImage ? (
                           <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
@@ -291,8 +364,18 @@ export default function OrderList({ initialOrders }: OrderListProps) {
               {/* Order Actions & Status */}
               <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-2 text-center md:text-left">Ubah Status</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-2 text-center md:text-left">Aksi Pengelolaan</span>
                   <div className="flex flex-wrap gap-2">
+                    {/* Verifikasi Pembayaran Manual */}
+                    {selectedOrder.paymentMethod === 'MANUAL_TRANSFER' && selectedOrder.paymentStatus === 'PENDING_VERIFICATION' && (
+                      <ActionButton
+                        onClick={handleVerifyManualPayment}
+                        label="Verifikasi Pembayaran Lunas"
+                        variant="success"
+                        isLoading={isUpdating}
+                      />
+                    )}
+
                     {/* Dynamic Action Buttons based on FSM */}
                     {selectedOrder.status === 'PENDING' && (
                       <>
@@ -352,6 +435,24 @@ export default function OrderList({ initialOrders }: OrderListProps) {
                   <p className="text-2xl font-black text-zinc-900 dark:text-zinc-100">IDR {selectedOrder.totalPrice.toLocaleString('id-ID')}</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Bukti Transfer Zoomed */}
+      {showLightbox && selectedOrder?.paymentProofUrl && (
+        <div 
+          role="button"
+          tabIndex={0}
+          onClick={() => setShowLightbox(false)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowLightbox(false); }}
+          className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-zinc-950/95 backdrop-blur-md cursor-zoom-out"
+        >
+          <div className="relative max-w-3xl max-h-[85vh] overflow-hidden rounded-2xl animate-in zoom-in-95 duration-300">
+            <img src={selectedOrder.paymentProofUrl} alt="Bukti Transfer Zoomed" className="w-full h-full object-contain" />
+            <div className="absolute top-4 right-4 bg-black/60 hover:bg-black/85 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors">
+              TUTUP
             </div>
           </div>
         </div>

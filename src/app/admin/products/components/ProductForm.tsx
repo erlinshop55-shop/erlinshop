@@ -61,6 +61,12 @@ export function ProductForm({
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const hasVariants = formData.variants.length > 0;
 
+  const submitButtonText = isUploadingImages 
+    ? "Menunggu Unggahan..." 
+    : editingProduct 
+      ? "Simpan Perubahan" 
+      : "Daftarkan Produk";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-amber-200">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -142,6 +148,7 @@ export function ProductForm({
                   required
                   value={formData.price}
                   onChange={(e) => setFormData((prev) => ({ ...prev, price: formatInputIDR(e.target.value) }))}
+                  onFocus={(e) => e.target.select()}
                   className="w-full pl-4 pr-12 py-3 rounded-xl border border-zinc-200 bg-white focus:border-emerald-600 outline-none text-emerald-700 font-mono font-bold"
                   placeholder="0"
                 />
@@ -159,6 +166,7 @@ export function ProductForm({
                   type="text" 
                   value={formData.original_price}
                   onChange={(e) => setFormData((prev) => ({ ...prev, original_price: formatInputIDR(e.target.value) }))}
+                  onFocus={(e) => e.target.select()}
                   className="w-full pl-4 pr-12 py-3 rounded-xl border border-zinc-200 bg-white focus:border-rose-500 outline-none text-rose-500 font-mono font-bold"
                   placeholder="0"
                 />
@@ -182,6 +190,7 @@ export function ProductForm({
                 disabled={hasVariants}
                 value={formData.stock}
                 onChange={(e) => setFormData((prev) => ({ ...prev, stock: Number.parseInt(e.target.value, 10) || 0 }))}
+                onFocus={(e) => e.target.select()}
                 className="w-full px-4 py-3 rounded-xl border border-zinc-200 bg-white focus:border-amber-500 outline-none text-zinc-950 font-mono font-bold disabled:bg-zinc-50 disabled:text-zinc-500"
               />
               {hasVariants && (
@@ -368,10 +377,7 @@ export function ProductForm({
           {isLoading || isUploadingImages ? (
             <Loader2 size={18} className="animate-spin" />
           ) : null}
-          {isUploadingImages 
-            ? "Menunggu Unggahan..." 
-            : editingProduct ? "Simpan Perubahan" : "Daftarkan Produk"
-          }
+          {submitButtonText}
         </button>
       </div>
     </form>
